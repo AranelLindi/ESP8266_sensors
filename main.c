@@ -30,6 +30,7 @@
 // === INTERVALLKONFIGURATION ===
 #define INTERVAL_MINUTES 10
 #define SLEEP_DURATION_MS (INTERVAL_MINUTES * 60UL * 1000UL)
+#define SUSPEND_DURATION_MS (2 * 60 * 60UL * 1000UL); // wenn MQTT Broker nicht erreicht wird für 2 Std Light Sleep
 
 // === LED ===
 #define LED_PIN LED_BUILTIN  // GPIO2 (D4), aktiv-low
@@ -107,11 +108,11 @@ bool connect_and_send() {
   return true;
 }
 
-void enter_light_sleep() {
-  DEBUG_PRINTF("Light Sleep für %d Minuten...\n", INTERVAL_MINUTES);
-  WiFi.disconnect(true);        // WLAN trennen, DHCP-Info löschen
-  WiFi.forceSleepBegin();       // WLAN-Hardware schlafen legen
-  delay(SLEEP_DURATION_MS);     // Light Sleep (CPU läuft weiter, WLAN schläft)
+void enter_light_sleep(unsigned long sleep_duration_ms) {
+  DEBUG_PRINTF("Light Sleep für %lu Minuten...\n", sleep_duration_ms / 60000UL);
+  WiFi.disconnect(true);          // WLAN trennen, DHCP-Info löschen
+  WiFi.forceSleepBegin();         // WLAN-Hardware schlafen legen
+  delay(sleep_duration_ms);       // CPU in Light Sleep (sofern aktiviert)
 }
 
 void setup() {
@@ -146,12 +147,18 @@ void loop() {
     lastSendTime = now;
 
     if (connect_wifi()) {
-      connect_and_send();
+      bool success = connect_and_send();
+
+      if (!success) {
+        enter_light_sleep(SUSPEND_DURATION_MS);  // 2 Stunden schlafen
+        return;  // danach zurück zum Start – nicht nochmal schlafen!
+        // loop() wird vom außenstehenden Code immer wieder aufgerufen,
+        // deshalb funktioniert hier auch return!
+      }
     }
 
-    enter_light_sleep();
+    enter_light_sleep(SLEEP_DURATION_MS);
   }
 
-  // Optional: CPU idle halten
   delay(50);
 }
