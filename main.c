@@ -1,4 +1,4 @@
-#define DEBUG  // einkommentieren für serielle Ausgabe
+//#define DEBUG  // einkommentieren für serielle Ausgabe
 
 #ifdef DEBUG
   #define DEBUG_PRINT(x)    Serial.print(x)
@@ -28,7 +28,7 @@
 #define TOPIC_HUM  "sensors/" DEVICE_NAME "/humidity"
 
 // === INTERVALLKONFIGURATION ===
-#define INTERVAL_MINUTES 1
+#define INTERVAL_MINUTES 10
 #define SLEEP_DURATION_MS (INTERVAL_MINUTES * 60UL * 1000UL)
 
 // === LED ===
