@@ -30,7 +30,7 @@
 // === INTERVALLKONFIGURATION ===
 #define INTERVAL_MINUTES 15
 #define SLEEP_DURATION_MS (INTERVAL_MINUTES * 60UL * 1000UL)
-#define SUSPEND_DURATION_MS (2 * 60 * 60UL * 1000UL); // wenn MQTT Broker nicht erreicht wird für 2 Std Light Sleep
+#define SUSPEND_DURATION_MS (2 * 60 * 60UL * 1000UL) // wenn MQTT Broker nicht erreicht wird für 2 Std Light Sleep
 
 // === LED ===
 #define LED_PIN LED_BUILTIN  // GPIO2 (D4), aktiv-low
